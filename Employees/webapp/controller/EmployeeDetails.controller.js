@@ -1,13 +1,14 @@
 // @ts-nocheck
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "logaligroup/Employees/model/formatter"
+    "logaligroup/Employees/model/formatter",
+    "sap/m/MessageBox"
 ],
     /**
      * 
      * @param {typeof sap.ui.core.mvc.Controller} Controller 
      */
-    function (Controller, formatter) {
+    function (Controller, formatter, MessageBox) {
         'use strict';
 
         function onInit() {
@@ -67,10 +68,20 @@ sap.ui.define([
 
             let context = oEvent.getSource().getBindingContext("incidenceModel");
             let contextObj = context.getObject();
+            let oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
 
             if (!oEvent.getSource().isValidValue()){
                 contextObj._ValidateDate = false;
                 contextObj.CreationDateState = "Error";
+                MessageBox.error(oResourceBundle.getText("errorCreationDateValue"), {
+                    title: "Error",
+                    onClose: null,
+                    styleClass: "",
+                    actions: MessageBox.Action.Close,
+                    emphasizedAction: null,
+                    initialFocus: null,
+                    textDirection: sap.ui.core.TextDirection.Inherit
+                });
             } else {
                 contextObj.CreationDateX = true;
                 contextObj._ValidateDate = true;
