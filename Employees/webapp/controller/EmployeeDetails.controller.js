@@ -29,7 +29,14 @@ sap.ui.define([
 
         function onDeleteIncidence(oEvent) {
 
-            var tableIncidence = this.getView().byId("tableIncidence");
+            var contextObj = oEvent.getSource().getBindingContext("incidenceModel").getObject();
+            this._bus.publish("incidence", "onDeleteIncidence", {
+                IncidenceId: contextObj.IncidenceId,
+                SapId: contextObj.SapId,
+                EmployeeId: contextObj.EmployeeId
+            });
+
+            /*var tableIncidence = this.getView().byId("tableIncidence");
             var rowIncidence = oEvent.getSource().getParent().getParent();
             var incidenceModel = this.getView().getModel("incidenceModel");
             var odata = incidenceModel.getData();
@@ -46,7 +53,7 @@ sap.ui.define([
 
             for (var j in tableIncidence.getContent()) {
                 tableIncidence.getContent()[j].bindElement("incidenceModel>/" + j)
-            };
+            };*/
         };
 
         function onSaveIncidence(oEvent) {

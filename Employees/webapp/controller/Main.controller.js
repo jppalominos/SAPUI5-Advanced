@@ -46,6 +46,22 @@ sap.ui.define([
                 this._bus = sap.ui.getCore().getEventBus();
                 this._bus.subscribe("flexible", "showEmployee", this.showEmployeeDetail, this);
                 this._bus.subscribe("incidence", "onSaveIncidence", this.onSaveODataIncidence, this);
+
+                this._bus.subscribe("incidence", "onDeleteIncidence", function(channelId, eventId, data){
+
+                    var oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+                    this.getView().getModel("incidenceModel").remove("/IncidentsSet(IncidenceId='" + data.IncidenceId + 
+                                                                      "',SapId='" + data.SapId +
+                                                                     "',EmployeeId='" + data.EmployeeId + "')" , {
+                         success: function () {
+                             this.onReadODataIncidence.bind(this)(data.EmployeeId);
+                            sap.m.MessageToast.show(oResourceBundle.getText("odataDeleteOK"));
+                         }.bind(this),
+                         error: function (e) {
+                            sap.m.MessageToast.show(oResourceBundle.getText("odataDeleteKO"));
+                        }.bind(this)
+                     });
+                }, this);
             },
 
             showEmployeeDetail: function (category, nameEvent, path) {
@@ -109,7 +125,6 @@ sap.ui.define([
                             sap.m.MessageToast.show(oResourceBundle.getText("odataUpdateKO"));
                         }.bind(this)
                      });
-
 
                 } else {
                     sap.m.MessageToast.show(oResourceBundle.getText("odataNoChanges"));
