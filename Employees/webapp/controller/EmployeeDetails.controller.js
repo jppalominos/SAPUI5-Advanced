@@ -7,6 +7,7 @@ sap.ui.define([
     /**
      * 
      * @param {typeof sap.ui.core.mvc.Controller} Controller 
+     * @param {typeof sap.m.MessageBox} MessageBox
      */
     function (Controller, formatter, MessageBox) {
         'use strict';
@@ -31,10 +32,17 @@ sap.ui.define([
         function onDeleteIncidence(oEvent) {
 
             var contextObj = oEvent.getSource().getBindingContext("incidenceModel").getObject();
-            this._bus.publish("incidence", "onDeleteIncidence", {
-                IncidenceId: contextObj.IncidenceId,
-                SapId: contextObj.SapId,
-                EmployeeId: contextObj.EmployeeId
+
+            MessageBox.confirm(this.getView().getModel("i18n").getResourceBundle().getText("confirmDeleteIncidence"), {
+                onClose: function (oAction) {
+                    if (oAction === "OK") {
+                        this._bus.publish("incidence", "onDeleteIncidence", {
+                            IncidenceId: contextObj.IncidenceId,
+                            SapId: contextObj.SapId,
+                            EmployeeId: contextObj.EmployeeId
+                        });
+                    }
+                }.bind(this)
             });
 
             /*var tableIncidence = this.getView().byId("tableIncidence");
@@ -42,16 +50,16 @@ sap.ui.define([
             var incidenceModel = this.getView().getModel("incidenceModel");
             var odata = incidenceModel.getData();
             var contextObj = rowIncidence.getBindingContext("incidenceModel");
-
+    
             //odata.splice(contextObj.index - 1, 1);
             odata.splice(contextObj.sPath.substring(1, contextObj.sPath.length), 1);
             for (var i in odata) {
                 odata[i].index = parseInt(i) + 1;
             };
-
+    
             incidenceModel.refresh();
             tableIncidence.removeContent(rowIncidence);
-
+    
             for (var j in tableIncidence.getContent()) {
                 tableIncidence.getContent()[j].bindElement("incidenceModel>/" + j)
             };*/
@@ -129,7 +137,7 @@ sap.ui.define([
                 contextObj.EnabledSave = false;
             };
             contextObj.TypeX = true;
-            
+
             context.getModel().refresh();
         };
 
