@@ -9,7 +9,7 @@ sap.ui.define([
     function (Controller) {
         'use strict';
 
-        return Controller.extend("logaligroup.Employees.controller.Main", {
+        return Controller.extend("logaligroup.Employees.controller.App", {
 
             onInit: function () {
 
