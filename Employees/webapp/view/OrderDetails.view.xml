@@ -3,4 +3,7 @@
           displayBlock="true" 
           xmlns="sap.m"
           xmlns:core="sap.ui.core">
+    <Page >
+        <Text text="Order Details"></Text>
+    </Page>
 </mvc:View>  
