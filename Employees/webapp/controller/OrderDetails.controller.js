@@ -11,7 +11,7 @@ sap.ui.define([
     function (Controller, History) {
         'use strict';
 
-        function _onObjectMatched(oEvent){
+        function _onObjectMatched(oEvent) {
             this.getView().bindElement({
                 path: "/Orders(" + oEvent.getParameter("arguments").OrderID + ")",
                 model: "odataNorthwind"
@@ -36,6 +36,11 @@ sap.ui.define([
                     var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                     oRouter.navTo("RouteMain", true);
                 };
+            },
+
+            onClearSignature: function (oEvent) {
+                var signature = this.byId("signature");
+                signature.clear();
             }
         });
     });

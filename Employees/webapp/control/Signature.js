@@ -9,9 +9,9 @@ sap.ui.define([
     function (Control) {
         'use strict';
 
-        return Control.extend("logaligroup.Employees.control.Signature", {
+        return Control.extend("logaligroup.Employees.controller.Signature", {
 
-            matadata: {
+            metadata: {
                 properties: {
                     "width": {
                         type: "sap.ui.core.CSSSize",
@@ -38,9 +38,9 @@ sap.ui.define([
                 oRM.addStyle("height", oControl.getProperty("height"));
                 oRM.addStyle("background-color", oControl.getProperty("bgcolor"));
                 oRM.addStyle("border", "1px solid black");
-                oRM.writeStyle();
+                oRM.writeStyles();
                 oRM.write(">");
-                oRM.write("<canvas width='" + oControl.getProperty("width") + "' height='" + oControl.getProperty("height") + "'");
+                oRM.write("<canvas width='" + oControl.getProperty("width") + "' " + "height='" + oControl.getProperty("height") + "'");
                 oRM.write("></canvas>");
                 oRM.write("</div>");
             },
@@ -48,7 +48,7 @@ sap.ui.define([
             onAfterRendering: function () {
                 var canvas = document.querySelector("canvas");
                 try {
-                    this.signaturePad = new signaturePa(canvas);
+                    this.signaturePad = new SignaturePad(canvas);
                 } catch (e) {
                     console.error(e);
                 }
