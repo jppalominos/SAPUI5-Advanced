@@ -1,14 +1,16 @@
 // @ts-nocheck
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
-    "sap/ui/core/routing/History"
+    "sap/ui/core/routing/History",
+    "sap/m/MessageBox"
 ],
     /**
      * 
      * @param {typeof sap.ui.core.mvc.Controller} Controller 
      * @param {typeof sap.ui.core.routing.History} History 
+     * @param {typeof sap.m.MessageBox} MessageBox 
      */
-    function (Controller, History) {
+    function (Controller, History, MessageBox) {
         'use strict';
 
         function _onObjectMatched(oEvent) {
@@ -51,9 +53,9 @@ sap.ui.define([
 
                 if (contextObject.Quantity <= unitsInStock) {
                     var objectListItem = new sap.m.ObjectListItem({
-                        title : "{odataNorthwind>/Products(" + contextObject.ProductID + ")/ProductName} ({odataNorthwind>Quantity})",
-                        number : "{parts: [{path: 'odataNorthwind>UnitPrice'}, {path: 'odataNorthwind>Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure : false}}",
-                        numberUnit : "{odataNorthwind>Currency}"
+                        title: "{odataNorthwind>/Products(" + contextObject.ProductID + ")/ProductName} ({odataNorthwind>Quantity})",
+                        number: "{parts: [{path: 'odataNorthwind>UnitPrice'}, {path: 'odataNorthwind>Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure : false}}",
+                        numberUnit: "{odataNorthwind>Currency}"
                     });
                     return objectListItem;
                 } else {
@@ -67,7 +69,36 @@ sap.ui.define([
                         ]
                     });
                     return customListItem;
-                }
+                };
+            },
+
+            onSaveSignature: function (oEvent) {
+                const signature = this.byId("signature");
+                const oResourceBundle = this.getView().getModel("i18n").getResourceBundle();
+                let signaturePng;
+
+                if (!signature.isFill()) {
+                    MessageBox.error(oResourceBundle.getText("fillSignature"));
+                } else {
+                    signaturePng = signature.getSignature().replace("data:image/png;base64,", "");
+                    let objectOrder = oEvent.getSource().getBindingContext("odataNorthwind").getObject();
+                    let body = {
+                        OrderId : objectOrder.OrderID.toString(),
+                        SapId : this.getOwnerComponent().SapId,
+                        EmployeeId : objectOrder.EmployeeID.toString(),
+                        MimeType : "image/png",
+                        MediaContent : signaturePng
+                    };
+
+                    this.getView().getModel("incidenceModel").create("/SignatureSet", body, {
+                        success : function() {
+                            MessageBox.information(oResourceBundle.getText("signatureSaved"));
+                        },
+                        error : function () {
+                            MessageBox.error(oResourceBundle.getText("signatureNotSaved"));
+                        }
+                    });
+                };
             }
         });
     });

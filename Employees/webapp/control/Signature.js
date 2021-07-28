@@ -68,7 +68,7 @@ sap.ui.define([
             },
 
             getSignature: function () {
-                this.signaturePad.toDataURL();
+                return this.signaturePad.toDataURL();
             },
 
             setSignature: function (signature) {
