@@ -187,6 +187,11 @@ sap.ui.define([
 
                     }
                 });
+            },
+
+            downloadFile: function (oEvent) {
+                const sPath = oEvent.getSource().getBindingContext("incidenceModel").getPath();
+                window.open("/sap/opu/odata/sap/YSAPUI5_SRV_01" + sPath + "/$value");
             }
         });
     });
