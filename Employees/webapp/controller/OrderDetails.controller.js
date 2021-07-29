@@ -131,13 +131,24 @@ sap.ui.define([
             },
 
             onFileBeforeUpload: function (oEvent) {
-                let fileName = oEvent.getParameter("filename");
+                let fileName = oEvent.getParameter("fileName");
                 let objContext = oEvent.getSource().getBindingContext("odataNorthwind").getObject();
-                let oCostumerHeaderSlug = sap.m.UploadCollectionParameter({
-                    name : "slug",
-                    value : objContext.OrderID + ";" + this.getOwnerComponent().SapId + ";" + objContext.EmployeeID + ";" + fileName
+                let oCostumerHeaderSlug = new sap.m.UploadCollectionParameter({
+                    name: "slug",
+                    value: objContext.OrderID + ";" + this.getOwnerComponent().SapId + ";" + objContext.EmployeeID + ";" + fileName
                 });
                 oEvent.getParameters().addHeaderParameter(oCostumerHeaderSlug);
+            },
+
+            onFileChange: function (oEvent) {
+                let oUploadCollection = oEvent.getSource();
+
+                //Header Token CSRF - Cross-site request forgery
+                let oCustomerHeaderToken = new sap.m.UploadCollectionParameter({
+                    name: "x-csrf-token",
+                    value: this.getView().getModel("incidenceModel").getSecurityToken()
+                });
+                oUploadCollection.addHeaderParameter(oCustomerHeaderToken);
             }
         });
     });
