@@ -173,6 +173,20 @@ sap.ui.define([
 
             onFileUploadComplete: function (oEvent) {
                 oEvent.getSource().getBinding("items").refresh();
+            },
+
+            onFileDeleted: function (oEvent) {
+
+                var oUploadCollection = oEvent.getSource();
+                var sPath = oEvent.getParameter("item").getBindingContext("incidenceModel").getPath();
+                this.getView().getModel("incidenceModel").remove(sPath, {
+                    success: function () {
+                        oUploadCollection.getBinding("items").refresh();
+                    },
+                    error: function () {
+
+                    }
+                });
             }
         });
     });
