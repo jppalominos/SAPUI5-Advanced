@@ -14,11 +14,40 @@ sap.ui.define([
         'use strict';
 
         function _onObjectMatched(oEvent) {
+
+            this.onClearSignature();
             this.getView().bindElement({
                 path: "/Orders(" + oEvent.getParameter("arguments").OrderID + ")",
-                model: "odataNorthwind"
+                model: "odataNorthwind",
+                events: {
+                    dataReceived : function(oData){
+                        _readSignature.bind(this)(oData.getParameter("data").OrderID, oData.getParameter("data").EmployeeID);                        
+                    }.bind(this)
+                }
             });
-        }
+
+            const objContext = this.getView().getModel("odataNorthwind").getContext("/Orders(" + oEvent.getParameter("arguments").OrderID + ")").getObject();
+            if (objContext) {
+                _readSignature.bind(this)(objContext.OrderID, objContext.EmployeeID);
+            }
+
+        };
+
+        function _readSignature(orderId, employeeId) {
+
+            this.getView().getModel("incidenceModel").read("/SignatureSet(OrderId='" + orderId + "',SapId='" + this.getOwnerComponent().SapId + "',EmployeeId='" + employeeId + "')", {
+                success: function (data) {
+                    const signature = this.getView().byId("signature");
+                    if (data.MediaContent !== "") {
+                        signature.setSignature("data:image/png;base64," + data.MediaContent);
+                    }
+                }.bind(this),
+                error: function (data) {
+
+                }
+            });
+
+        };
 
         return Controller.extend("logaligroup.Employees.controller.OrderDetails", {
 
@@ -83,18 +112,18 @@ sap.ui.define([
                     signaturePng = signature.getSignature().replace("data:image/png;base64,", "");
                     let objectOrder = oEvent.getSource().getBindingContext("odataNorthwind").getObject();
                     let body = {
-                        OrderId : objectOrder.OrderID.toString(),
-                        SapId : this.getOwnerComponent().SapId,
-                        EmployeeId : objectOrder.EmployeeID.toString(),
-                        MimeType : "image/png",
-                        MediaContent : signaturePng
+                        OrderId: objectOrder.OrderID.toString(),
+                        SapId: this.getOwnerComponent().SapId,
+                        EmployeeId: objectOrder.EmployeeID.toString(),
+                        MimeType: "image/png",
+                        MediaContent: signaturePng
                     };
 
                     this.getView().getModel("incidenceModel").create("/SignatureSet", body, {
-                        success : function() {
+                        success: function () {
                             MessageBox.information(oResourceBundle.getText("signatureSaved"));
                         },
-                        error : function () {
+                        error: function () {
                             MessageBox.error(oResourceBundle.getText("signatureNotSaved"));
                         }
                     });
