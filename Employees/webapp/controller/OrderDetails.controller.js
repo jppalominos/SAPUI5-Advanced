@@ -20,8 +20,8 @@ sap.ui.define([
                 path: "/Orders(" + oEvent.getParameter("arguments").OrderID + ")",
                 model: "odataNorthwind",
                 events: {
-                    dataReceived : function(oData){
-                        _readSignature.bind(this)(oData.getParameter("data").OrderID, oData.getParameter("data").EmployeeID);                        
+                    dataReceived: function (oData) {
+                        _readSignature.bind(this)(oData.getParameter("data").OrderID, oData.getParameter("data").EmployeeID);
                     }.bind(this)
                 }
             });
@@ -128,6 +128,16 @@ sap.ui.define([
                         }
                     });
                 };
+            },
+
+            onFileBeforeUpload: function (oEvent) {
+                let fileName = oEvent.getParameter("filename");
+                let objContext = oEvent.getSource().getBindingContext("odataNorthwind").getObject();
+                let oCostumerHeaderSlug = sap.m.UploadCollectionParameter({
+                    name : "slug",
+                    value : objContext.OrderID + ";" + this.getOwnerComponent().SapId + ";" + objContext.EmployeeID + ";" + fileName
+                });
+                oEvent.getParameters().addHeaderParameter(oCostumerHeaderSlug);
             }
         });
     });
