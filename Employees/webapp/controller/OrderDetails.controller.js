@@ -2,15 +2,19 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/core/routing/History",
-    "sap/m/MessageBox"
+    "sap/m/MessageBox",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator"
 ],
     /**
      * 
      * @param {typeof sap.ui.core.mvc.Controller} Controller 
      * @param {typeof sap.ui.core.routing.History} History 
-     * @param {typeof sap.m.MessageBox} MessageBox 
+     * @param {typeof sap.m.MessageBox} MessageBox
+     * @param {typeof sap.ui.model.Filter} Filter
+     * @param {typeof sap.ui.model.FilterOperator} FilterOperator
      */
-    function (Controller, History, MessageBox) {
+    function (Controller, History, MessageBox, Filter, FilterOperator) {
         'use strict';
 
         function _onObjectMatched(oEvent) {
@@ -35,6 +39,7 @@ sap.ui.define([
 
         function _readSignature(orderId, employeeId) {
 
+            //read signature image
             this.getView().getModel("incidenceModel").read("/SignatureSet(OrderId='" + orderId + "',SapId='" + this.getOwnerComponent().SapId + "',EmployeeId='" + employeeId + "')", {
                 success: function (data) {
                     const signature = this.getView().byId("signature");
@@ -45,6 +50,21 @@ sap.ui.define([
                 error: function (data) {
 
                 }
+            });
+
+            //bind files
+            this.byId("uploadCollection").bindAggregation("items", {
+                path: "incidenceModel>/FilesSet",
+                filters: [
+                    new Filter("OrderId", FilterOperator.EQ, orderId),
+                    new Filter("SapId", FilterOperator.EQ, this.getOwnerComponent().SapId),
+                    new Filter("EmployeeId", FilterOperator.EQ, employeeId)
+                ],
+                template: new sap.m.UploadCollectionItem({
+                    documentId: "{incidenceModel>AttId}",
+                    visibleEdit: false,
+                    fileName: "{incidenceModel>FileName}"
+                }).attachPress(this.downloadFile)
             });
 
         };
