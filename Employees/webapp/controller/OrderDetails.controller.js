@@ -169,6 +169,10 @@ sap.ui.define([
                     value: this.getView().getModel("incidenceModel").getSecurityToken()
                 });
                 oUploadCollection.addHeaderParameter(oCustomerHeaderToken);
+            },
+
+            onFileUploadComplete: function (oEvent) {
+                oEvent.getSource().getBinding("items").refresh();
             }
         });
     });
